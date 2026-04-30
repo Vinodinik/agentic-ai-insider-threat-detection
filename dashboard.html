@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agentic AI – Insider Threat Detection</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ================= BODY ================= */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #FFFFFF;
+    color: #1E293B;
+    margin: 0;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 50px 25px;
+}
+
+/* ================= TITLE ================= */
+h1 {
+    font-size: 44px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    color: #334155;
+    margin-bottom: 45px;
+    font-size: 16px;
+}
+
+/* ================= CARD ================= */
+.card {
+    background: linear-gradient(145deg,#EFF6FF,#FFFFFF);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border: 1px solid #BFDBFE;
+    border-left: 4px solid #2563EB; /* 🔥 ADDED BLUE BORDER */
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(37,99,235,0.15);
+}
+
+/* ================= GRID ================= */
+.agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+    gap: 25px;
+}
+
+/* ================= AGENT TITLE ================= */
+.agent-title {
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #1E40AF;
+}
+
+/* ================= DESCRIPTION ================= */
+.agent-desc {
+    font-size: 15.5px;
+    color: #334155;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* ================= BUTTON ================= */
+.btn {
+    padding: 11px 22px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    font-size: 14.5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* ================= INPUT ================= */
+.upload-input {
+    padding: 11px;
+    background: #F8FAFC;
+    color: #1E293B;
+    border-radius: 10px;
+    border: 1px solid #CBD5F5;
+    font-size: 14px;
+}
+
+/* ================= TABLE ================= */
+.output-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.output-table th, .output-table td {
+    padding: 12px;
+    border-bottom: 1px solid #E2E8F0;
+    font-size: 14px;
+}
+
+/* ================= BADGE ================= */
+.badge {
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: white;
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<center>
+<h1>Agentic AI Insider Threat Detection</h1>
+<div class="subtitle">
+Early Insider Threat Detection using User Behavior Analytics 
+</div>
+</center>
+
+<!-- Upload Section -->
+<div class="card">
+    <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required class="upload-input">
+            <button class="btn btn-primary">Upload Dataset</button>
+        </form>
+
+        <a href="/run_all_agents">
+            <button class="btn btn-primary"> Run All Agents</button>
+        </a>
+    </div>
+</div>
+
+<!-- Agent Grid -->
+<div class="agent-grid">
+
+<div class="card">
+    <div class="agent-title">Detection Agent</div>
+    <div class="agent-desc">
+        Learns normal user behavior using Isolation Forest and detects anomalies.
+    </div>
+    <a href="/run_detection"><button class="btn btn-primary">Run Agent</button></a>
+</div>
+
+<div class="card">
+    <div class="agent-title">Simulation Agent</div>
+    <div class="agent-desc">
+        Injects synthetic insider scenarios to validate detection resilience.
+    </div>
+    <a href="/run_simulation"><button class="btn btn-primary">Run Agent</button></a>
+</div>
+
+<div class="card">
+    <div class="agent-title">Reasoning Agent</div>
+    <div class="agent-desc">
+        Provides contextual explanation for flagged insider activities.
+    </div>
+    <a href="/run_reasoning"><button class="btn btn-primary">Run Agent</button></a>
+</div>
+
+<div class="card">
+    <div class="agent-title">Risk Scoring Agent</div>
+    <div class="agent-desc">
+        Assigns dynamic risk scores and prioritizes high-risk users.
+    </div>
+    <a href="/run_risk"><button class="btn btn-primary">Run Agent</button></a>
+</div>
+
+<div class="card">
+    <div class="agent-title">Response Agent</div>
+    <div class="agent-desc">
+        Triggers automated containment actions based on severity.
+    </div>
+    <a href="/run_response"><button class="btn btn-primary">Run Agent</button></a>
+</div>
+
+<div class="card">
+    <div class="agent-title">Explainability Layer</div>
+    <div class="agent-desc">
+        Generates audit-ready explanations aligned with compliance standards.
+    </div>
+    <a href="/run_explain"><button class="btn btn-primary">Run Agent</button></a>
+</div>
+
+</div>
+
+</div>
+</body>
+</html>

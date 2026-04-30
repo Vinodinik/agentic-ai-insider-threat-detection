@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Executive Threat Intelligence Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background: #FFFFFF;
+    padding: 50px;
+    color: #1e293b;
+    position: relative;
+}
+
+h1 {
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Section Card */
+.section {
+    background: #FFFFFF;
+    border: 1px solid rgba(3,218,198,0.25);
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+/* KPI */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 20px;
+}
+
+.kpi {
+    background: #F8FAFC;
+    padding: 20px;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.kpi h3 {
+    font-size: 14px;
+    color: #1E3A8A;;
+}
+
+.kpi p {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1E3A8A;
+}
+
+/* ================= PIPELINE EXECUTION ================= */
+.pipeline-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.pipeline-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFFFFF;
+    padding: 18px 22px;
+    border-radius: 14px;
+    border-left: 4px solid #1E3A8A;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.pipeline-card:hover {
+    transform: translateX(6px);
+    background: #DBEAFE;
+}
+
+.pipeline-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pipeline-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+}
+
+.pipeline-agent {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.pipeline-records {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-top: 3px;
+}
+
+.status-pill {
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 0 12px rgba(3,218,198,0.5);
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #E0F2FE;
+}
+
+tr:nth-child(even) {
+    background: #F1F5F9;
+}
+
+/* Badge */
+.badge {
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+}
+
+/* Severity Colors */
+.critical { color: #FF3B3B; font-weight: 600; }
+.high { color: #FF8C00; font-weight: 600; }
+.medium { color: #FFD600; font-weight: 600; }
+.low { color: #00E676; font-weight: 600; }
+
+/* Top Right Button */
+.top-btn {
+    position:absolute;
+    top:50px;
+    right:60px;
+    padding:12px 24px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:600;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+color: white;
+}
+/* Hide radio inputs */
+.severity-filter input {
+    display: none;
+}
+
+.severity-filter {
+    margin-bottom: 20px;
+}
+
+/* Styled Buttons */
+.btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-right: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+}
+
+/* Severity Theme Buttons */
+.critical-btn { background: #FF3B3B; color: white; }
+.high-btn { background: #FF8C00; color: white; }
+.medium-btn { background: #FFD600; color: black; }
+.low-btn { background: #00E676; color: black; }
+.lowest-btn {
+    background: #64748b;
+    color: white;
+}
+
+/* Active effect */
+.severity-filter input:checked + label {
+    box-shadow: 0 0 15px rgba(255,255,255,0.4);
+    transform: scale(1.05);
+}
+</style>
+</head>
+
+<body>
+
+<a href="/" class="top-btn">← Back to Dashboard</a>
+
+<h1>Full Agentic AI Threat Dashboard</h1>
+
+<!-- KPI SECTION -->
+<div class="section">
+    <div class="kpi-grid">
+        <div class="kpi">
+            <h3>Total Logs</h3>
+            <p>{{ total_logs }}</p>
+        </div>
+        <div class="kpi">
+            <h3>Total Anomalies</h3>
+            <p>{{ total_anomalies }}</p>
+        </div>
+        <div class="kpi">
+            <h3>Total Users</h3>
+            <p>{{ total_users }}</p>
+        </div>
+        <div class="kpi">
+            <h3>Total Alerts</h3>
+            <p>{{ total_alerts }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- ================= AGENT EXECUTION FLOW ================= -->
+<div class="section">
+    <h2>Agent Execution Flow</h2>
+
+    <div class="pipeline-container">
+        {% for step in pipeline_summary %}
+        <div class="pipeline-card">
+            
+            <div class="pipeline-left">
+                <div class="pipeline-icon">⚙</div>
+                <div>
+                    <div class="pipeline-agent">{{ step.agent }}</div>
+                    <div class="pipeline-records">
+                        {{ "{:,}".format(step.records) }} Records Processed
+                    </div>
+                </div>
+            </div>
+
+            <div class="pipeline-right">
+                <span class="status-pill">
+                    ✔ {{ step.status }}
+                </span>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+    <!-- ================= SEVERITY SUMMARY ================= -->
+<div class="risk-section">
+<h2 class="risk-title-main">Risk Based User View</h2>
+<div class="severity-summary">
+    <div class="severity-card critical-card">
+        <div class="severity-title">Critical</div>
+        <div class="severity-count">{{ critical_user_count }}</div>
+        <div class="severity-label">Users</div>
+    </div>
+
+    <div class="severity-card high-card">
+        <div class="severity-title">High</div>
+        <div class="severity-count">{{ high_user_count }}</div>
+        <div class="severity-label">Users</div>
+    </div>
+
+    <div class="severity-card medium-card">
+        <div class="severity-title">Medium</div>
+        <div class="severity-count">{{ medium_user_count }}</div>
+        <div class="severity-label">Users</div>
+    </div>
+
+    <div class="severity-card low-card">
+        <div class="severity-title">Low</div>
+        <div class="severity-count">{{ low_user_count }}</div>
+        <div class="severity-label">Users</div>
+    </div>
+
+      <div class="severity-card lowest-card">
+        <div class="severity-title">Cosmetic</div>
+        <div class="severity-count">{{ lowest_user_count }}</div>
+        <div class="severity-label">Users</div>
+    </div>
+</div>
+
+    <div class="severity-filter">
+    <input type="radio" name="severity" id="critical" checked onclick="showTable('critical')">
+    <label for="critical" class="btn critical-btn">Critical</label>
+
+    <input type="radio" name="severity" id="high" onclick="showTable('high')">
+    <label for="high" class="btn high-btn">High</label>
+
+    <input type="radio" name="severity" id="medium" onclick="showTable('medium')">
+    <label for="medium" class="btn medium-btn">Medium</label>
+
+    <input type="radio" name="severity" id="low" onclick="showTable('low')">
+    <label for="low" class="btn low-btn">Low</label>
+
+    <input type="radio" name="severity" id="lowest" onclick="showTable('lowest')">
+    <label for="lowest" class="btn lowest-btn">Cosmetic</label>
+</div></div>
+
+    <table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>User</th>
+            <th>PC</th>
+            <th>Hour</th>
+            <th>Risk Score</th>
+            <th>Severity</th>
+            <th>Recommended Action</th>
+        </tr>
+    </thead>
+
+    {% set critical_users = final_table | selectattr("Severity", "equalto", "Critical") | list %}
+    {% set high_users = final_table | selectattr("Severity", "equalto", "High") | list %}
+    {% set medium_users = final_table | selectattr("Severity", "equalto", "Medium") | list %}
+    {% set low_users = final_table | selectattr("Severity", "equalto", "Low") | list %}
+    {% set lowest_users = final_table | selectattr("Severity", "equalto", "Lowest") | list %}
+
+    <!-- ================= CRITICAL ================= -->
+    <tbody id="criticalTable">
+        {% for row in critical_users %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.User }}</td>
+            <td>{{ row.PC }}</td>
+            <td>{{ row.Hour }}</td>
+            <td>
+                <div class="risk-bar">
+                    <div class="risk-fill" style="width: {{ row.Risk_Score if row.Risk_Score <= 100 else 100 }}%"></div>
+                </div>
+                {{ row.Risk_Score|round(1) }}
+            </td>
+            <td><span class="severity-pill">{{ row.Severity }}</span></td>
+            <td>{{ row.Recommended_Action }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+    <!-- ================= HIGH ================= -->
+    <tbody id="highTable" style="display:none;">
+        {% for row in high_users %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.User }}</td>
+            <td>{{ row.PC }}</td>
+            <td>{{ row.Hour }}</td>
+            <td>
+                <div class="risk-bar">
+                    <div class="risk-fill" style="width: {{ row.Risk_Score if row.Risk_Score <= 100 else 100 }}%"></div>
+                </div>
+                {{ row.Risk_Score|round(1) }}
+            </td>
+            <td><span class="severity-pill">{{ row.Severity }}</span></td>
+            <td>{{ row.Recommended_Action }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+    <!-- ================= MEDIUM ================= -->
+    <tbody id="mediumTable" style="display:none;">
+        {% for row in medium_users %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.User }}</td>
+            <td>{{ row.PC }}</td>
+            <td>{{ row.Hour }}</td>
+            <td>
+                <div class="risk-bar">
+                    <div class="risk-fill" style="width: {{ row.Risk_Score if row.Risk_Score <= 100 else 100 }}%"></div>
+                </div>
+                {{ row.Risk_Score|round(1) }}
+            </td>
+            <td><span class="severity-pill">{{ row.Severity }}</span></td>
+            <td>{{ row.Recommended_Action }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+    <!-- ================= LOW ================= -->
+    <tbody id="lowTable" style="display:none;">
+        {% for row in low_users %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.User }}</td>
+            <td>{{ row.PC }}</td>
+            <td>{{ row.Hour }}</td>
+            <td>
+                <div class="risk-bar">
+                    <div class="risk-fill" style="width: {{ row.Risk_Score if row.Risk_Score <= 100 else 100 }}%"></div>
+                </div>
+                {{ row.Risk_Score|round(1) }}
+            </td>
+            <td><span class="severity-pill">{{ row.Severity }}</span></td>
+            <td>{{ row.Recommended_Action }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+   <!-- ================= COSMETIC TABLE (Backend still uses Lowest) ================= -->
+<tbody id="lowestTable" style="display:none;">
+    {% for row in lowest_users %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ row.User }}</td>
+        <td>{{ row.PC }}</td>
+        <td>{{ row.Hour }}</td>
+        <td>
+            <div class="risk-bar">
+                <div class="risk-fill" style="width: {{ row.Risk_Score if row.Risk_Score <= 100 else 100 }}%"></div>
+            </div>
+            {{ row.Risk_Score|round(1) }}
+        </td>
+        <td><span class="severity-pill">{{ row.Severity }}</span></td>
+        <td>{{ row.Recommended_Action }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+</table>
+</div>
+
+<div style="text-align:center; margin-top:40px;">
+    <a href="/download_full_dashboard_report"
+       style="
+           padding:14px 28px;
+           border-radius:14px;
+           font-weight:600;
+           text-decoration:none;
+           background:linear-gradient(90deg,#1E3A8A,#2563EB);
+           color:white;
+           box-shadow:0 8px 25px rgba(3,218,198,0.4);
+           display:inline-block;
+       ">
+        ⬇ Download Full Dashboard Report (PDF)
+    </a>
+</div>
+
+
+<!-- ================= STYLES ================= -->
+<style>
+
+/* ================= BODY ================= */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #FFFFFF;
+    padding: 40px;
+    color: #1E293B;
+    position: relative;
+}
+
+/* ================= TITLE ================= */
+h1 {
+    font-size: 30px; /* reduced */
+    margin-bottom: 8px;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ================= SECTION ================= */
+.section {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-left: 4px solid #2563EB;
+    padding: 18px 20px; /* reduced */
+    border-radius: 14px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    transition: 0.3s;
+}
+
+.section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(37,99,235,0.12);
+}
+
+/* ================= SECTION TITLE ================= */
+.section h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+/* ================= KPI GRID ================= */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 14px; /* reduced */
+}
+
+/* ================= KPI CARD ================= */
+.kpi {
+    background: linear-gradient(145deg,#EFF6FF,#FFFFFF);
+    padding: 16px 18px; /* reduced */
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #BFDBFE;
+    border-left: 4px solid #2563EB;
+    transition: 0.3s;
+}
+
+.kpi:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+}
+
+/* ================= KPI TEXT ================= */
+.kpi h3 {
+    font-size: 13px;
+    color: #64748B;
+    margin-bottom: 4px;
+}
+
+.kpi p {
+    font-size: 24px; /* reduced */
+    font-weight: 800;
+    color: #1E40AF;
+}
+
+/* ================= PIPELINE ================= */
+.pipeline-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    border-left: 4px solid #2563EB;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.pipeline-card:hover {
+    background: #DBEAFE;
+}
+
+/* ================= STATUS ================= */
+.status-pill {
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+    background: #2563EB;
+    color: white;
+}
+
+/* ================= TABLE ================= */
+table {
+    font-size: 14px;
+}
+
+th {
+    background: #DBEAFE;
+    font-size: 13px;
+}
+
+tr:nth-child(even) {
+    background: #F1F5F9;
+}
+
+<style>
+
+/* ================= TABLE ================= */
+tbody tr {
+    transition: all 0.2s ease;
+}
+tbody tr:hover {
+    background: #DBEAFE;
+    transform: scale(1.01);
+}
+
+table {
+    font-size: 14px;
+}
+
+th {
+    background: #DBEAFE;
+    font-size: 13px;
+}
+
+tr:nth-child(even) {
+    background: #F8FAFC;
+}
+
+
+/* ================= LEFT BLUE BAR (RISK SECTION) ================= */
+.risk-section {
+    position: relative;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: #F8FAFC;
+    margin-bottom: 10px; /* reduced so it doesn't include buttons */
+}
+
+/* STRAIGHT LEFT BAR ONLY FOR TOP AREA */
+/* ================= LEFT BLUE BAR (PROPER) ================= */
+.risk-section {
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: #F8FAFC;
+    margin-bottom: 10px;
+    border-left: 4px solid #2563EB; /* CLEAN + ALIGNED */
+}
+
+/* ================= RISK BAR ================= */
+.risk-bar {
+    background: #E2E8F0;
+    border-radius: 6px;
+    height: 8px;
+    width: 130px;
+    margin-bottom: 4px;
+    overflow: hidden;
+}
+
+.risk-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    transition: width 0.4s ease;
+}
+
+
+/* ================= SEVERITY PILLS ================= */
+.severity-pill {
+    padding: 5px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #EFF6FF;
+    color: #1E40AF;
+    border: 1px solid #BFDBFE;
+}
+
+
+/* ================= SEVERITY SUMMARY ================= */
+.severity-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 20px 0 25px 0;
+}
+
+.severity-card {
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    background: linear-gradient(145deg,#EFF6FF,#FFFFFF);
+    border: 1px solid #E2E8F0;
+    transition: 0.3s;
+}
+
+.severity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+}
+
+/* ================= RISK VIEW TITLE ================= */
+.risk-title-main {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+/* ================= TEXT SIZING ================= */
+.severity-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.severity-count {
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.severity-label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* ================= COLORS (KEEP LOGIC) ================= */
+.critical-card { border-left: 4px solid #ef4444; }
+.high-card     { border-left: 4px solid #f97316; }
+.medium-card   { border-left: 4px solid #eab308; }
+.low-card      { border-left: 4px solid #22c55e; }
+.lowest-card   { border-left: 4px solid #64748b; }
+
+.critical-card .severity-count { color: #ef4444; }
+.high-card .severity-count     { color: #f97316; }
+.medium-card .severity-count   { color: #eab308; }
+.low-card .severity-count      { color: #22c55e; }
+.lowest-card .severity-count   { color: #64748b; }
+
+
+/* ================= FILTER BUTTONS ================= */
+/* ================= FILTER BUTTONS ================= */
+.severity-filter {
+    margin-bottom: 15px;
+}
+
+.severity-filter input {
+    display: none;
+}
+
+.severity-filter label {
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 8px;
+    border: none;
+    color: white;
+    transition: all 0.25s ease;
+}
+
+/* ALWAYS COLORED */
+.critical-btn { background: #ef4444; }
+.high-btn     { background: #f97316; }
+.medium-btn   { background: #eab308; color: #1f2937; }
+.low-btn      { background: #22c55e; }
+.lowest-btn   { background: #64748b; }
+
+/* CLICK EFFECT (OPTIONAL VISUAL ONLY) */
+.severity-filter input:checked + label {
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+/* ================= RISK CARD LAYOUT ================= */
+.risk-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.risk-card {
+    background: linear-gradient(145deg,#EFF6FF,#FFFFFF);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #E2E8F0;
+    transition: 0.3s;
+}
+
+.risk-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(37,99,235,0.12);
+}
+
+/* ================= SEVERITY COLORS ================= */
+.critical-card {
+    border-left: 4px solid #ef4444;
+}
+.critical-card .risk-value { color: #ef4444; }
+
+.high-card {
+    border-left: 4px solid #f97316;
+}
+.high-card .risk-value { color: #f97316; }
+
+.medium-card {
+    border-left: 4px solid #eab308;
+}
+.medium-card .risk-value { color: #eab308; }
+
+.low-card {
+    border-left: 4px solid #22c55e;
+}
+.low-card .risk-value { color: #22c55e; }
+
+.lowest-card {
+    border-left: 4px solid #64748b;
+}
+.lowest-card .risk-value { color: #64748b; }
+
+
+/* ================= RISK BAR ================= */
+.risk-bar {
+    background: #E2E8F0;
+    height: 8px;
+    width: 140px;
+    border-radius: 6px;
+    margin: 6px 0 4px 0;
+    overflow: hidden;
+}
+
+.risk-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    transition: width 0.4s ease-in-out;
+}
+/* ================= BUTTON ================= */
+.top-btn {
+    position: absolute;
+    top: 40px;
+    right: 50px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    color: white;
+}
+
+/* ================= DOWNLOAD BUTTON ================= */
+.download-btn {
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(90deg,#1E3A8A,#2563EB);
+    color: white;
+}
+
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function showTable(level) {
+    const tables = ["criticalTable", "highTable", "mediumTable", "lowTable", "lowestTable"];
+    tables.forEach(id => {
+        document.getElementById(id).style.display = "none";
+    });
+    document.getElementById(level + "Table").style.display = "";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    showTable("critical");
+});
+</script>
+</body>
+</html>
